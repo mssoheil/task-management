@@ -5,6 +5,15 @@ export class RegisterRequestDto {
     required: true,
     type: String,
     nullable: false,
+    description: 'fullName',
+    example: 'myfullName',
+  })
+  fullName: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+    nullable: false,
     description: 'username',
     example: 'myUserName',
   })
