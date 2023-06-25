@@ -3,6 +3,7 @@ import { RegisterRequestDto } from './auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ApiProperty } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
 
 export class Cat {
   /**
@@ -23,16 +24,17 @@ export class Cat {
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   @Post('register')
   @ApiTags('register')
   @ApiOperation({ summary: 'Register user' })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
-    type: Cat,
   })
   register(@Body() payload: RegisterRequestDto) {
     console.log('AuthController -> register -> payload:', payload);
-    return 12;
+    return this.authService.addUser(payload);
   }
 }
