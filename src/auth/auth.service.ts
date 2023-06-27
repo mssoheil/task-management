@@ -21,16 +21,15 @@ export class AuthService {
     }
 
     const hashedPassword = hashPassword(user.password);
+    const newData = {
+      ...user,
+      password: hashedPassword,
+    };
 
-    await this.prisma.$transaction(async (prisma) => {
-      // Perform database operations within the transaction
-      await prisma.user.create({
-        data: {
-          ...user,
-          password: hashedPassword,
-        },
-      });
+    await this.prisma.user.create({
+      data: newData,
     });
+
     return 'user created';
   }
 

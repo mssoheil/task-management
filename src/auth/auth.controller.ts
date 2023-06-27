@@ -34,7 +34,6 @@ export class AuthController {
     description: 'Forbidden.',
   })
   register(@Body() payload: RegisterRequestDto) {
-    console.log('AuthController -> register -> payload:', payload);
     return this.authService.addUser(payload);
   }
 }
