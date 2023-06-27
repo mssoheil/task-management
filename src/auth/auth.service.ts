@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from 'hash';
-import type { RegisterRequestDto } from './auth.dto';
+import { comparePassword, hashPassword } from 'src/helpers/hash';
+import type { LoginRequestDto, RegisterRequestDto } from './auth.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   private readonly prisma: PrismaClient;
 
-  constructor() {
+  constructor(private readonly jwtService: JwtService) {
     this.prisma = new PrismaClient();
   }
 
@@ -20,7 +21,7 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = hashPassword(user.password);
+    const hashedPassword = await hashPassword(user.password);
     const newData = {
       ...user,
       password: hashedPassword,
@@ -33,12 +34,45 @@ export class AuthService {
     return 'user created';
   }
 
+  async loginUser(payload: LoginRequestDto) {
+    const foundUser = await this.getUserByUserName(payload.username);
+    console.log('AuthService -> loginUser -> foundUser:', foundUser);
+
+    if (!foundUser) {
+      throw new UnauthorizedException();
+    }
+
+    const samePassword = await comparePassword(
+      payload.password,
+      foundUser.password,
+    );
+
+    if (!samePassword) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      access_token: await this.jwtService.signAsync({
+        sub: foundUser.id,
+        username: foundUser.username,
+      }),
+    };
+  }
+
   findAllUsers() {
     return this.prisma.user.findMany();
   }
 
   countAllUsers() {
     return this.findAllUsers.length;
+  }
+
+  async getUserByUserName(username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+    });
+
+    return user;
   }
 
   async getUserByMobile(mobileNumber: string) {

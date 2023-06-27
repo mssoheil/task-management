@@ -46,3 +46,32 @@ export class RegisterRequestDto {
   })
   mobileNumber: string;
 }
+
+export class LoginRequestDto {
+  @ApiProperty({
+    required: true,
+    type: String,
+    nullable: false,
+    description: 'username',
+    example: 'myUserName',
+  })
+  username: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+    nullable: false,
+    description: 'password',
+    example: 'myPassword',
+  })
+  password: string;
+}
+
+export class LoginResponseDto {
+  @ApiProperty({
+    description: 'token',
+    type: String,
+    nullable: true,
+  })
+  token: string | null;
+}

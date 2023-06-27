@@ -1,26 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { RegisterRequestDto } from './auth.dto';
+import { LoginRequestDto, RegisterRequestDto } from './auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
-import { ApiProperty } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-
-export class Cat {
-  /**
-   * The name of the Cat
-   * @example Kitty
-   */
-  name: string;
-
-  @ApiProperty({ example: 1, description: 'The age of the Cat' })
-  age: number;
-
-  @ApiProperty({
-    example: 'Maine Coon',
-    description: 'The breed of the Cat',
-  })
-  breed: string;
-}
 
 @Controller('auth')
 export class AuthController {
@@ -29,11 +10,21 @@ export class AuthController {
   @Post('register')
   @ApiTags('register')
   @ApiOperation({ summary: 'Register user' })
+  register(@Body() payload: RegisterRequestDto) {
+    return this.authService.addUser(payload);
+  }
+
+  @Post('login')
+  @ApiTags('login')
+  @ApiOperation({
+    tags: ['login'],
+    summary: 'login user',
+  })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
   })
-  register(@Body() payload: RegisterRequestDto) {
-    return this.authService.addUser(payload);
+  login(@Body() payload: LoginRequestDto) {
+    return this.authService.loginUser(payload);
   }
 }
