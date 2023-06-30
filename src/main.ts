@@ -11,6 +11,7 @@ async function bootstrap() {
     .setDescription('A Task management api')
     .setVersion('0.0')
     .addTag('Auth', 'Authentication apis')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

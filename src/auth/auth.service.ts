@@ -59,6 +59,15 @@ export class AuthService {
     };
   }
 
+  getUser(userName: string) {
+    return this.getUserByUserName(userName, {
+      email: true,
+      username: true,
+      fullName: true,
+      mobileNumber: true,
+    });
+  }
+
   findAllUsers() {
     return this.prisma.user.findMany();
   }
@@ -67,9 +76,10 @@ export class AuthService {
     return this.findAllUsers.length;
   }
 
-  async getUserByUserName(username: string) {
+  async getUserByUserName(username: string, select?: Record<string, boolean>) {
     const user = await this.prisma.user.findUnique({
       where: { username },
+      ...(select && { select }),
     });
 
     return user;
